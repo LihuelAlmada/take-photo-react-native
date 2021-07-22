@@ -6,6 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 
 export default function App() {
+  //Hooks
   const cameraRef = useRef(null)
   const [autoFocus, setAutoFocus] = useState(Camera.Constants.AutoFocus.singleShot);
   const [whiteBalance, setWhiteBalance] = useState(Camera.Constants.WhiteBalance.fluorescent);
@@ -20,13 +21,7 @@ export default function App() {
       setHasPermission(status === 'granted')
     })();
   }, []);
-  if(hasPermission === null){
-    return <View/>;
-  }
-  if(hasPermission === false){
-    return <Text>Aceso denegado! acepte los permisos para la camara</Text>;
-  }
-
+  //funtions
   async function takePicture(){
     if (cameraRef) {
       const data = await cameraRef.current.takePictureAsync();
@@ -34,6 +29,18 @@ export default function App() {
       setOpen(true);
       console.log(data);
     }
+  }
+
+  async function sendData(){
+    //agregar post a servicio
+    alert("Se envio la informacion exitosamente, espere unos segundos para recibir la informacion");
+  }
+  //return
+  if(hasPermission === null){
+    return <View/>;
+  }
+  if(hasPermission === false){
+    return <Text>Aceso denegado! acepte los permisos para la camara</Text>;
   }
   if(hasPermission === true){
     return (
@@ -72,24 +79,31 @@ export default function App() {
             transparent={false}
             visible={open}
           >
-            <Image
-              style={styles.imageImage}
-              source={{uri: capturePhoto}}
-            />
             <View style={styles.modalView}>
-              <TouchableOpacity 
-                style={{ margin: 10}}
-                onPress={ ()=> setOpen(false)}
-              >
-                <FontAwesome name="window-close" style={styles.icon}/>
-              </TouchableOpacity>
+              <Image
+                style={styles.imageModal}
+                source={{uri: capturePhoto}}
+              />
+              <View style={styles.containerButtons}>
+                <TouchableOpacity 
+                  style={{ margin: 10}}
+                  onPress={ ()=> setOpen(false)}
+                >
+                  <FontAwesome name="window-close" style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={{ margin: 10}}
+                  onPress={ sendData}
+                >
+                  <FontAwesome name="upload" style={styles.icon}/>
+                </TouchableOpacity>
+              </View>
             </View>
           </Modal>
         }
       </SafeAreaView>
     );
   }
-  
 }
 
 const styles = StyleSheet.create({
@@ -129,13 +143,19 @@ const styles = StyleSheet.create({
     margin: 20
   },
   icon:{
-    fontSize: 25,
+    fontSize: 30,
     color: "#FFF",
   },
-  imageImage: { 
-    flex: 5,
+  imageModal: { 
+    flex: 11,
     width: '100%',
     height: 300,
     borderRadius: 20
+  },
+  containerButtons: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'space-around',
+    width: '100%',
   }
 });
